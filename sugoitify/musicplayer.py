@@ -15,6 +15,7 @@ class MusicBox(object, metaclass=Singleton):
     def __init__(self, volume=0.5):
         super()
         self.volume = volume
+        self.paused = False
         self.pygame = pygame
 
         self.initMixer()
@@ -43,13 +44,22 @@ class MusicBox(object, metaclass=Singleton):
     def unpause_music(self):
         self.pygame.mixer.music.unpause()
 
+    def pause_unpause_music(self):
+        if self.paused:
+            self.unpause_music()
+        else:
+            self.pause_music()
+        self.paused = not self.paused
+
     def volume_up(self):
-        self.volume = math.floor(self.volume) + 1
+        self.volume = (math.floor(self.volume * 10) + 1) / 10
         self.volume = 1 if self.volume > 1 else self.volume
+        self.pygame.mixer.music.set_volume(self.volume)
 
     def volume_down(self):
-        self.volume = math.ceil(self.volume) - 1
+        self.volume = (math.ceil(self.volume * 10) - 1) / 10
         self.volume = 0 if self.volume < 0 else self.volume
+        self.pygame.mixer.music.set_volume(self.volume)
 
     def getmixerargs(self):
         pygame.mixer.init()
