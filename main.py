@@ -1,14 +1,13 @@
-import pygame
 from sugoitify.musicplayer import MusicBox
 import RPi.GPIO as GPIO
 
 def main():
+    box = MusicBox()
     try:
-        box = MusicBox()
         filename = 'house_lo.wav'
-        box.playmusic(filename)
+        box.play_music(filename)
     except KeyboardInterrupt:  # to stop playing, press "ctrl-c"
-        box.stopmusic()
+        box.stop_music()
         print("\nPlay Stopped by user")
     except Exception:
         print("unknown error")

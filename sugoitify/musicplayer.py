@@ -12,27 +12,25 @@ class MusicBox(object):
         """Play sound through default mixer channel in blocking manner.
         This will load the whole sound into memory before playback
         """
-        clock = pygame.time.Clock()
         sound = pygame.mixer.Sound(soundfile)
         sound.play()
-        while pygame.mixer.get_busy():
-            print("Playing...")
-            clock.tick(1000)
 
     def play_music(self, soundfile):
         """Stream music with mixer.music module in blocking manner.
         This will stream the sound from disk while playing.
         """
-        clock = pygame.time.Clock()
         pygame.mixer.music.load(soundfile)
         pygame.mixer.music.play()
-        while pygame.mixer.music.get_busy():
-            print("Playing...")
-            clock.tick(1000)
 
     def stop_music(self):
         """stop currently playing music"""
         pygame.mixer.music.stop()
+
+    def pause_music(self):
+        pygame.mixer.music.pause()
+
+    def unpause_music(self):
+        pygame.mixer.music.unpause()
 
     def volume_up(self):
         self.volume = math.floor(self.volume) + 1
