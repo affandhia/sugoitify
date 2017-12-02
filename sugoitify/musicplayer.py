@@ -2,35 +2,46 @@ import pygame
 import math
 
 
-class MusicBox(object):
+class Singleton(type):
+    _instances = {}
+
+    def __call__(cls, *args, **kwargs):
+        if cls not in cls._instances:
+            cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
+        return cls._instances[cls]
+
+
+class MusicBox(object, metaclass=Singleton):
     def __init__(self, volume=0.5):
         super()
-        self.initMixer()
         self.volume = volume
+        self.pygame = pygame
+
+        self.initMixer()
 
     def play_sound(self, soundfile):
         """Play sound through default mixer channel in blocking manner.
         This will load the whole sound into memory before playback
         """
-        sound = pygame.mixer.Sound(soundfile)
+        sound = self.pygame.mixer.Sound(soundfile)
         sound.play()
 
     def play_music(self, soundfile):
         """Stream music with mixer.music module in blocking manner.
         This will stream the sound from disk while playing.
         """
-        pygame.mixer.music.load(soundfile)
-        pygame.mixer.music.play()
+        self.pygame.mixer.music.load(soundfile)
+        self.pygame.mixer.music.play()
 
     def stop_music(self):
         """stop currently playing music"""
-        pygame.mixer.music.stop()
+        self.pygame.mixer.music.stop()
 
     def pause_music(self):
-        pygame.mixer.music.pause()
+        self.pygame.mixer.music.pause()
 
     def unpause_music(self):
-        pygame.mixer.music.unpause()
+        self.pygame.mixer.music.unpause()
 
     def volume_up(self):
         self.volume = math.floor(self.volume) + 1
@@ -48,4 +59,4 @@ class MusicBox(object):
     def initMixer(self):
         BUFFER = 3072  # audio buffer size, number of samples since pygame 1.8.
         FREQ, SIZE, CHAN = self.getmixerargs()
-        pygame.mixer.init(FREQ, SIZE, CHAN, BUFFER)
+        self.pygame.mixer.init(FREQ, SIZE, CHAN, BUFFER)
