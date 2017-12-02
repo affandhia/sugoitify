@@ -16,6 +16,7 @@ class MusicBox(object, metaclass=Singleton):
         super()
         self.volume = volume
         self.paused = False
+        self.muted = False
         self.pygame = pygame
 
         self.initMixer()
@@ -60,6 +61,13 @@ class MusicBox(object, metaclass=Singleton):
         self.volume = (math.ceil(self.volume * 10) - 1) / 10
         self.volume = 0 if self.volume < 0 else self.volume
         self.pygame.mixer.music.set_volume(self.volume)
+
+    def volume_mute(self):
+        if self.muted:
+            self.pygame.mixer.music.set_volume(self.volume)
+        else:
+            self.pygame.mixer.music.set_volume(0)
+        self.muted = not self.muted
 
     def getmixerargs(self):
         pygame.mixer.init()
