@@ -1,7 +1,7 @@
 import time, threading
 
 from sugoitify.musicplayer import MusicBox
-from sugoitify.utils import Throttle, debounce
+from sugoitify.utils import debounce
 import RPi.GPIO as GPIO
 
 box = MusicBox()
@@ -40,16 +40,6 @@ io_map = {
     }
 }
 DEBOUNCE_THRESHOLD = 0.2
-
-
-@Throttle(seconds=0.5)
-def printOutput():
-    print("throttled")
-
-
-@debounce(3)
-def printOutputan():
-    print("debounced")
 
 
 def adjust_led_volume():
