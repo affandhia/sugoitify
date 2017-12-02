@@ -16,4 +16,5 @@ Sugoitify is multi-platform music player with GPIO Raspberry Pi for controls.
 3. Run `python -m venv env`.
 4. Run `source env/bin/activate` for Unix system, for those who don't just buy another rig. Try figure it out by yourself. cmon windows...?
 5. Run `pip install -r req.txt`.
+6. Now you are ready for [Hands On](#hands-on)
 
