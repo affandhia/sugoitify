@@ -1,4 +1,4 @@
-import time, threading
+import time, threading, sys
 
 from sugoitify.musicplayer import MusicBox
 from sugoitify.utils import debounce
@@ -7,10 +7,23 @@ from os import listdir
 from os.path import isfile, join
 from random import randint
 
+debug = True if len(sys.argv) > 1 and sys.argv[1] == "debug" else False
+
 mypath = 'src/music'
 music_files = [join(mypath, f) for f in listdir(mypath) if isfile(join(mypath, f))]
-print(music_files)
+debug and print(music_files)
 box = MusicBox()
+NO_REPEAT = "NO_REPEAT"
+REPEAT_ALL = "REPEAT_ALL"
+REPEAT_ONE = "REPEAT_ONE"
+repeat_mode = [NO_REPEAT, REPEAT_ALL, REPEAT_ONE]
+current_track_index = 0
+repeat_mode_index = 0
+shuffle = False
+next_is_playing = False
+playing = False
+DEBOUNCE_THRESHOLD = 0.2
+
 io_map = {
     "backward": {
         "pin": 17,
@@ -69,16 +82,6 @@ io_map = {
         "mode": GPIO.OUT
     }
 }
-NO_REPEAT = "NO_REPEAT"
-REPEAT_ALL = "REPEAT_ALL"
-REPEAT_ONE = "REPEAT_ONE"
-repeat_mode = [NO_REPEAT, REPEAT_ALL, REPEAT_ONE]
-current_track_index = 0
-repeat_mode_index = 0
-shuffle = False
-next_is_playing = False
-playing = False
-DEBOUNCE_THRESHOLD = 0.2
 
 
 def adjust_led_volume():
@@ -115,7 +118,8 @@ def setup_gpio():
     for key in io_map_keys:
         mode = io_map[key]["mode"]
         pin = io_map[key]["pin"]
-        GPIO.setup(pin, mode, initial=GPIO.LOW) if mode == GPIO.OUT else GPIO.setup(pin, mode, pull_up_down=GPIO.PUD_DOWN)
+        GPIO.setup(pin, mode, initial=GPIO.LOW) if mode == GPIO.OUT else GPIO.setup(pin, mode,
+                                                                                    pull_up_down=GPIO.PUD_DOWN)
 
 
 def cleanup_gpio():
@@ -124,13 +128,13 @@ def cleanup_gpio():
 
 def music_monitor():
     current_playing_led_index = 0
-#    nyala = False
+    #    nyala = False
     try:
         while True:
             time.sleep(1)
             playing_led = io_map["led_playing"]["pin"]
-#            GPIO.output(7, GPIO.HIGH if nyala else GPIO.LOW)
-#            nyala = not nyala
+            #            GPIO.output(7, GPIO.HIGH if nyala else GPIO.LOW)
+            #            nyala = not nyala
             if box.pygame.mixer.music.get_busy():
                 for i in playing_led:
                     if i == playing_led[current_playing_led_index]:
@@ -170,7 +174,7 @@ def button_mapping():
     elif GPIO.input(io_map["vol_mute"]["pin"]):
         GPIO.output(24, GPIO.HIGH)
         vol_mute_button()
-    else:
+    elif debug:
         print("waiting input button")
 
 
@@ -187,18 +191,18 @@ def repeat_mode_mapping():
 
 
 def controller():
-    nyala =  True
+    nyala = True
     while True:
         time.sleep(0.1)
         GPIO.output(23, GPIO.HIGH if nyala else GPIO.LOW)
-        #nyala = not nyala
+        # nyala = not nyala
         button_mapping()
         repeat_mode_mapping()
 
 
-@debounce(DEBOUNCE_THRESHOLD)
+@debounce(DEBOUNCE_THRESHOLD, debug)
 def setup_music(path=music_files[0]):
-    print("index {} path: {}".format(current_track_index, path))
+    debug and print("index {} path: {}".format(current_track_index, path))
     box.play_music(path)
 
     adjust_led_volume()
@@ -206,7 +210,7 @@ def setup_music(path=music_files[0]):
     next_is_playing = False
 
 
-@debounce(DEBOUNCE_THRESHOLD)
+@debounce(DEBOUNCE_THRESHOLD, debug)
 def backward_button():
     global playing, current_track_index, next_is_playing
     playing = True
@@ -220,7 +224,7 @@ def backward_button():
         next_is_playing = False
 
 
-@debounce(DEBOUNCE_THRESHOLD)
+@debounce(DEBOUNCE_THRESHOLD, debug)
 def forward_button():
     global playing, current_track_index, next_is_playing
     playing = True
@@ -230,7 +234,7 @@ def forward_button():
     next_is_playing = False
 
 
-@debounce(DEBOUNCE_THRESHOLD)
+@debounce(DEBOUNCE_THRESHOLD, debug)
 def shuffle_button():
     global shuffle
     shuffle = not shuffle
@@ -238,7 +242,7 @@ def shuffle_button():
     adjust_led_volume()
 
 
-@debounce(DEBOUNCE_THRESHOLD)
+@debounce(DEBOUNCE_THRESHOLD, debug)
 def pause_unpause_button():
     global playing
     playing = not playing
@@ -248,14 +252,14 @@ def pause_unpause_button():
         setup_music(music_files[current_track_index])
 
 
-@debounce(DEBOUNCE_THRESHOLD)
+@debounce(DEBOUNCE_THRESHOLD, debug)
 def stop_button():
     global playing
     playing = False
     box.stop_music()
 
 
-@debounce(DEBOUNCE_THRESHOLD)
+@debounce(DEBOUNCE_THRESHOLD, debug)
 def repeat_mode_button():
     global repeat_mode_index
     repeat_mode_index = 0 if repeat_mode_index + 1 >= len(repeat_mode) else (repeat_mode_index + 1)
@@ -263,25 +267,23 @@ def repeat_mode_button():
     adjust_led_volume()
 
 
-@debounce(DEBOUNCE_THRESHOLD / 2)
+@debounce(DEBOUNCE_THRESHOLD, debug / 2)
 def vol_up_button():
     box.volume_up()
 
     adjust_led_volume()
 
 
-@debounce(DEBOUNCE_THRESHOLD / 2)
+@debounce(DEBOUNCE_THRESHOLD, debug / 2)
 def vol_down_button():
     box.volume_down()
 
     adjust_led_volume()
 
 
-@debounce(DEBOUNCE_THRESHOLD)
+@debounce(DEBOUNCE_THRESHOLD, debug)
 def vol_mute_button():
     box.volume_mute()
-    print("Muted button pressed")
-    GPIO.output(24, GPIO.HIGH)
     GPIO.output(io_map["led_muted"]["pin"], GPIO.HIGH if box.muted else GPIO.LOW)
 
 
@@ -296,11 +298,14 @@ def main():
     music_thread.daemon = True
     music_thread.start()
     while True:
-        if GPIO.input(io_map["vol_mute"]["pin"]):
-            print("pencet")
-        else:
-            print("lepas")
+        if debug:
+            if GPIO.input(io_map["vol_mute"]["pin"]):
+                print("pencet")
+            else:
+                print("lepas")
         time.sleep(1)
+
+
 if __name__ == '__main__':
     import logging
 

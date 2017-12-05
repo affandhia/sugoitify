@@ -27,7 +27,7 @@ class Throttle(object):
         return wrapper
 
 
-def debounce(wait):
+def debounce(wait, debug):
     """ Decorator that will postpone a functions
         execution until after wait seconds
         have elapsed since the last time it was invoked.
@@ -37,7 +37,9 @@ def debounce(wait):
     def decorator(fn):
         fname = fn
         def debounced(*args, **kwargs):
-            print("debounce {}".format(fname))
+            if debug:
+                print("debounce {}".format(fname))
+
             def call_it():
                 fn(*args, **kwargs)
 
