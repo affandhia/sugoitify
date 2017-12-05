@@ -49,15 +49,15 @@ io_map = {
         "mode": GPIO.IN
     },
     "led_playing": {
-        "pin": [36, 38, 40],
+        "pin": [16],
         "mode": GPIO.OUT
     },
     "led_muted": {
-        "pin": 32,
+        "pin": 18,
         "mode": GPIO.OUT
     },
     "led_volume": {
-        "pin": [29, 31, 33, 35, 37],
+        "pin": [19, 21, 23],
         "mode": GPIO.OUT
     },
     "led_repeat": {
