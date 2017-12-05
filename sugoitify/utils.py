@@ -35,7 +35,9 @@ def debounce(wait):
     """
 
     def decorator(fn):
+        fname = fn
         def debounced(*args, **kwargs):
+            print("debounce {}".format(fname))
             def call_it():
                 fn(*args, **kwargs)
 
