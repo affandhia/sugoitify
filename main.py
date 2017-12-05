@@ -107,7 +107,7 @@ def adjust_led_volume():
 
 
 def setup_gpio():
-    GPIO.setmode(GPIO.BOARD)
+    GPIO.setmode(GPIO.BCM)
 
     GPIO.setwarnings(False)
 
