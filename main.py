@@ -26,39 +26,39 @@ DEBOUNCE_THRESHOLD = 0.2
 
 io_map = {
     "backward": {
-        "pin": 17,
+        "pin": 10,
         "mode": GPIO.IN
     },
     "forward": {
-        "pin": 21,
+        "pin": 9,
         "mode": GPIO.IN
     },
     "shuffle": {
-        "pin": 22,
+        "pin": 11,
         "mode": GPIO.IN
     },
     "play": {
-        "pin": 14,
+        "pin": 17,
         "mode": GPIO.IN
     },
     "stop": {
-        "pin": 15,
+        "pin": 27,
         "mode": GPIO.IN
     },
     "repeat_mode": {
-        "pin": 4,
+        "pin": 22,
         "mode": GPIO.IN
     },
     "vol_up": {
-        "pin": 14,
+        "pin": 25,
         "mode": GPIO.IN
     },
     "vol_down": {
-        "pin": 15,
+        "pin": 8,
         "mode": GPIO.IN
     },
     "vol_mute": {
-        "pin": 18,
+        "pin": 7,
         "mode": GPIO.IN
     },
     "led_playing": {
@@ -70,15 +70,15 @@ io_map = {
         "mode": GPIO.OUT
     },
     "led_volume": {
-        "pin": [10, 9, 23],
+        "pin": [2, 3, 4],
         "mode": GPIO.OUT
     },
     "led_repeat": {
-        "pin": [25, 8],
+        "pin": [14, 15],
         "mode": GPIO.OUT
     },
     "led_suffle": {
-        "pin": 7,
+        "pin": 18,
         "mode": GPIO.OUT
     }
 }
