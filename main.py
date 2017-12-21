@@ -26,59 +26,59 @@ DEBOUNCE_THRESHOLD = 0.2
 
 io_map = {
     "backward": {
-        "pin": 10,
-        "mode": GPIO.IN
-    },
-    "forward": {
-        "pin": 9,
-        "mode": GPIO.IN
-    },
-    "shuffle": {
         "pin": 11,
         "mode": GPIO.IN
     },
+    "forward": {
+        "pin": 13,
+        "mode": GPIO.IN
+    },
+    "shuffle": {
+        "pin": 15,
+        "mode": GPIO.IN
+    },
     "play": {
-        "pin": 17,
-        "mode": GPIO.IN
-    },
-    "stop": {
-        "pin": 27,
-        "mode": GPIO.IN
-    },
-    "repeat_mode": {
         "pin": 22,
         "mode": GPIO.IN
     },
-    "vol_up": {
-        "pin": 25,
+    "stop": {
+        "pin": 24,
         "mode": GPIO.IN
     },
-    "vol_down": {
+    "repeat_mode": {
+        "pin": 26,
+        "mode": GPIO.IN
+    },
+    "vol_up": {
         "pin": 8,
         "mode": GPIO.IN
     },
+    "vol_down": {
+        "pin": 10,
+        "mode": GPIO.IN
+    },
     "vol_mute": {
-        "pin": 7,
+        "pin": 12,
         "mode": GPIO.IN
     },
     "led_playing": {
-        "pin": [23],
+        "pin": [36],
         "mode": GPIO.OUT
     },
     "led_muted": {
-        "pin": 24,
+        "pin": 32,
         "mode": GPIO.OUT
     },
     "led_volume": {
-        "pin": [2, 3, 4],
+        "pin": [29, 31, 33],
         "mode": GPIO.OUT
     },
     "led_repeat": {
-        "pin": [14, 15],
+        "pin": [3, 5],
         "mode": GPIO.OUT
     },
     "led_suffle": {
-        "pin": 18,
+        "pin": 7,
         "mode": GPIO.OUT
     }
 }
@@ -110,7 +110,7 @@ def adjust_led_volume():
 
 
 def setup_gpio():
-    GPIO.setmode(GPIO.BCM)
+    GPIO.setmode(GPIO.BOARD)
 
     GPIO.setwarnings(False)
 
@@ -172,7 +172,6 @@ def button_mapping():
     elif GPIO.input(io_map["vol_down"]["pin"]):
         vol_down_button()
     elif GPIO.input(io_map["vol_mute"]["pin"]):
-        GPIO.output(24, GPIO.HIGH)
         vol_mute_button()
     elif debug:
         print("waiting input button")
@@ -194,7 +193,6 @@ def controller():
     nyala = True
     while True:
         time.sleep(0.1)
-        GPIO.output(23, GPIO.HIGH if nyala else GPIO.LOW)
         # nyala = not nyala
         button_mapping()
         repeat_mode_mapping()
